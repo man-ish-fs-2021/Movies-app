@@ -2,7 +2,11 @@ import React from 'react';
 import {data} from '../data';
 import Navbar from './Navbar';
 import MovieCard from './MovieCard';
-import {addMovies} from '../actions';
+import {addMovies,setShowFavs} from '../actions';
+
+
+
+
 class App extends React.Component{
   
   componentDidMount(){
@@ -15,22 +19,43 @@ class App extends React.Component{
     store.dispatch(addMovies(data));
   }
   
+  isMovieFav=(movie)=>{
+    const {favs} = this.props.store.getState();
+    const index = favs.indexOf(movie);
+    if(index !== -1){
+      return true;
+    }
+    return false;
+  }
+
+  displayFavs = (val)=>{
+    this.props.store.dispatch(setShowFavs(val));
+  }
   
   render(){
-    const movies = this.props.store.getState();
+    const {list, favs, setShowFavs} = this.props.store.getState();
+
+    const displayMovies = setShowFavs ? favs : list
+
+    console.log("sadstore",this.props.store.getState());
     return (
       <div className="App">
         <Navbar />
         <div className='main'>
           <div className='tabs'>
-            <div className='tab'>Movies</div>
-            <div className='tab'>Favourites</div>
+            <div className={`tab ${setShowFavs? '' :'active-tabs'}`} onClick={()=>this.displayFavs(false)}>Movies</div>
+            <div className={`tab ${setShowFavs? 'active-tabs' :''}`} onClick={()=>this.displayFavs(true)}>Favourites</div>
           </div>
           <div className='list'>
-            {movies.map((movie,index)=>{
-              return <MovieCard movie={movie} key={`movie-${index}`} />
+            {displayMovies.map((movie,index)=>{
+              return <MovieCard 
+              movie={movie} 
+              key={`movie-${index}`} 
+              dispatch={this.props.store.dispatch} 
+              isFav={this.isMovieFav(movie)}/>
             })}
           </div>
+          {displayMovies.length === 0 ? <div className="no-movies">No movies on the list</div>:null}
         </div>
       </div>
     );

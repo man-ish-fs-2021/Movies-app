@@ -148,3 +148,19 @@ code {
   background-color: #2185d0;
   color: #fff;
 }
+
+.unfavourite-btn{
+  background-color: #db2828;
+  color: #fff;
+  text-shadow: black;
+}
+
+.active-tabs {
+  background: #2185d0 !important;
+  color: white;
+}
+.no-movies {
+  padding: 20px 0;
+  font-size: 20px;
+  color: #6d6d6d;
+}
