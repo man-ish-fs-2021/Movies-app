@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {createStore} from 'redux';
+import {createStore, applyMiddleware} from 'redux';
 
 
 
@@ -8,7 +8,13 @@ import './index.css';
 import App from './components/App';
 import rootReducer from './reducers';
 
-const store = createStore(rootReducer);
+
+const logger = ({dispatch,getState}) => (next) => (action) =>{
+  console.log("ACtion type",action.type);
+  next(action);
+}
+
+const store = createStore(rootReducer,applyMiddleware(logger));
 
 
 ReactDOM.render(
