@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {createStore, applyMiddleware} from 'redux';
+import thunk from 'redux-thunk';
 
 
 
@@ -10,11 +11,13 @@ import rootReducer from './reducers';
 
 
 const logger = ({dispatch,getState}) => (next) => (action) =>{
-  console.log("ACtion type",action.type);
+  if(typeof action !== 'function'){
+    console.log("ACtion type",action.type);
+  }
   next(action);
 }
 
-const store = createStore(rootReducer,applyMiddleware(logger));
+const store = createStore(rootReducer,applyMiddleware(logger,thunk));
 
 
 ReactDOM.render(
