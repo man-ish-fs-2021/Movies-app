@@ -3,6 +3,7 @@ import {data} from '../data';
 import Navbar from './Navbar';
 import MovieCard from './MovieCard';
 import {addMovies,setShowFavs} from '../actions';
+import { connect } from 'react-redux';
 
 
 
@@ -10,17 +11,12 @@ import {addMovies,setShowFavs} from '../actions';
 class App extends React.Component{
   
   componentDidMount(){
-    const {store} = this.props;
-
-    store.subscribe(()=>{
-      console.log("updated");
-      this.forceUpdate();
-    })
-    store.dispatch(addMovies(data));
+    
+    this.props.dispatch(addMovies(data));
   }
   
   isMovieFav=(movie)=>{
-    const {movies} = this.props.store.getState();
+    const {movies} = this.props;
     const index = movies.favs.indexOf(movie);
     if(index !== -1){
       return true;
@@ -29,19 +25,19 @@ class App extends React.Component{
   }
 
   displayFavs = (val)=>{
-    this.props.store.dispatch(setShowFavs(val));
+    this.props.dispatch(setShowFavs(val));
   }
   
   render(){
-    const {movies, search} = this.props.store.getState();
+    const {movies, search} = this.props;
     const {list, favs, setShowFavs} = movies;
 
     const displayMovies = setShowFavs ? favs : list
 
-    console.log("sadstore",this.props.store.getState());
+    console.log("sadstore",this.props);
     return (
       <div className="App">
-        <Navbar dispatch={this.props.store.dispatch} search={search}/>
+        <Navbar  search={search}/>
         <div className='main'>
           <div className='tabs'>
             <div className={`tab ${setShowFavs? '' :'active-tabs'}`} onClick={()=>this.displayFavs(false)}>Movies</div>
@@ -52,7 +48,7 @@ class App extends React.Component{
               return <MovieCard 
               movie={movie} 
               key={`movie-${index}`} 
-              dispatch={this.props.store.dispatch} 
+              dispatch={this.props.dispatch} 
               isFav={this.isMovieFav(movie)}/>
             })}
           </div>
@@ -63,4 +59,20 @@ class App extends React.Component{
   }
 }
 
-export default App;
+// class AppWrapper extends React.Component{
+//   render(){
+//       return(
+//         <StoreContext.Consumer>
+//         {(store)=> <App store={store} /> }
+//         </StoreContext.Consumer>
+//       );
+//   }
+// }
+const mapStateToProps = (state)=>{
+    return {
+      movies: state.movies,
+      search: state.search
+    }
+}
+const AppConnected = connect(mapStateToProps)(App);
+export default AppConnected;
